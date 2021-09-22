@@ -21,7 +21,11 @@ const App = () => {
   return (
     <div className='App'>
       <PostForm create={createPost} />
-      <PostList posts={posts} removePost={removePost} title='Посты JS' />
+      {posts.length !== 0 ? (
+        <PostList posts={posts} removePost={removePost} title='Посты JS' />
+      ) : (
+        <h1 style={{ textAlign: 'center' }}>Посты не были найдены!</h1>
+      )}
     </div>
   );
 };
