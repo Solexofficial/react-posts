@@ -41,11 +41,8 @@ const App = () => {
       <div>
         <PostFilter filter={filter} setFilter={setFilter} />
       </div>
-      {sortedAndSearchedPosts.length !== 0 ? (
-        <PostList posts={sortedAndSearchedPosts} removePost={removePost} title='Посты JS' />
-      ) : (
-        <h1 style={{ textAlign: 'center' }}>Посты не были найдены!</h1>
-      )}
+
+      <PostList posts={sortedAndSearchedPosts} removePost={removePost} title='Посты JS' />
     </div>
   );
 };
