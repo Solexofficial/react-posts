@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
 import MyInput from './components/UI/input/MyInput';
@@ -8,22 +8,25 @@ import './styles/App.css';
 const App = () => {
   const [posts, setPosts] = useState([
     { id: 1, title: 'Javascript', body: '1' },
-    { id: 2, title: 'Javascript 3', body: '3' },
-    { id: 3, title: 'Javascript 2', body: 'Description1' },
+    { id: 2, title: 'TypeScript 3', body: '3' },
+    { id: 3, title: 'Redux 2', body: 'Description1' },
   ]);
 
   const [selectedSort, setSelectedSort] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const getSortedPosts = () => {
+  const sortedPosts = useMemo(() => {
+    console.log('sorting!');
     if (selectedSort) {
       return [...posts.sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))];
     } else {
       return posts;
     }
-  };
+  }, [selectedSort, posts]);
 
-  const sortedPosts = getSortedPosts();
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPosts.filter(post => post.title.includes(searchQuery));
+  }, [searchQuery, sortedPosts]);
 
   const createPost = newPost => {
     setPosts([...posts, newPost]);
@@ -54,7 +57,7 @@ const App = () => {
         />
       </div>
       {posts.length !== 0 ? (
-        <PostList posts={sortedPosts} removePost={removePost} title='Посты JS' />
+        <PostList posts={sortedAndSearchedPosts} removePost={removePost} title='Посты JS' />
       ) : (
         <h1 style={{ textAlign: 'center' }}>Посты не были найдены!</h1>
       )}
