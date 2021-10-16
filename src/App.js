@@ -6,24 +6,35 @@ import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
 import Loader from './components/UI/Loader/Loader';
 import MyModal from './components/UI/modal/MyModal';
+import { getPageCount, getPagesArray } from './components/utils/pages';
 import { useFetching } from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
 import './styles/App.css';
 
 const App = () => {
   const [posts, setPosts] = useState([]);
-
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+
+  //TODO: refactoring by use memo!
+  let pagesArray = getPagesArray(totalPages);
+
+  console.log('####: [pagesArray]', pagesArray);
+
   const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
-    const posts = await PostService.getAll();
-    setPosts(posts);
+    const response = await PostService.getAll(limit, page);
+    setPosts(response.data);
+    const totalCount = response.headers['x-total-count'];
+    setTotalPages(getPageCount(totalCount, limit));
   });
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [page]);
 
   const createPost = newPost => {
     setPosts([...posts, newPost]);
@@ -32,6 +43,10 @@ const App = () => {
 
   const removePost = post => {
     setPosts(posts.filter(p => p.id !== post.id));
+  };
+
+  const changePage = page => {
+    setPage(page);
   };
 
   return (
@@ -48,6 +63,7 @@ const App = () => {
         <PostFilter filter={filter} setFilter={setFilter} />
       </div>
       {postError && <h1>Произошла ошибка {postError}</h1>}
+
       {isPostsLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
           <Loader />
@@ -55,6 +71,13 @@ const App = () => {
       ) : (
         <PostList posts={sortedAndSearchedPosts} removePost={removePost} title='Посты JS' />
       )}
+      <div className='page__wrapper'>
+        {pagesArray.map(p => (
+          <span key={p} className={page === p ? 'page page__current' : 'page'} onClick={() => changePage(p)}>
+            {p}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };
