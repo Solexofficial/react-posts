@@ -23,6 +23,10 @@
   border: 2px solid teal;
 }
 
+.post__btns {
+  display: flex;
+}
+
 .post-enter {
   opacity: 0;
 }
