@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getPagesArray } from '../../utils/pages';
 
 const Pagination = ({ totalPages, page, changePage }) => {
-  //TODO: refactoring by use memo!
-  let pagesArray = getPagesArray(totalPages);
+  let pagesArray = useMemo(() => getPagesArray(totalPages), [totalPages]);
 
-  console.log('####: [pagesArray]', pagesArray);
   return (
     <div className='page__wrapper'>
       {pagesArray.map(p => (
