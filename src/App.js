@@ -6,6 +6,7 @@ import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
 import Loader from './components/UI/Loader/Loader';
 import MyModal from './components/UI/modal/MyModal';
+import Pagination from './components/UI/pagination/Pagination';
 import { getPageCount, getPagesArray } from './components/utils/pages';
 import { useFetching } from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
@@ -19,11 +20,6 @@ const App = () => {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
-
-  //TODO: refactoring by use memo!
-  let pagesArray = getPagesArray(totalPages);
-
-  console.log('####: [pagesArray]', pagesArray);
 
   const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
     const response = await PostService.getAll(limit, page);
@@ -72,13 +68,7 @@ const App = () => {
       ) : (
         <PostList posts={sortedAndSearchedPosts} removePost={removePost} title='Посты JS' />
       )}
-      <div className='page__wrapper'>
-        {pagesArray.map(p => (
-          <span key={p} className={page === p ? 'page page__current' : 'page'} onClick={() => changePage(p)}>
-            {p}
-          </span>
-        ))}
-      </div>
+      <Pagination totalPages={totalPages} page={page} changePage={changePage} />
     </div>
   );
 };
